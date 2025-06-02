@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenAI Jungle Quest</title>
+	<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Loading Screen -->
+        <div id="loading">
+            <div class="loading-spinner"></div>
+            <div>Loading GenAI Jungle Quest...</div>
+            <div id="loading-status" style="font-size: 0.8rem; margin-top: 10px; color: #666;"></div>
+            <button id="skip-loading" onclick="skipLoading()" style="margin-top: 20px; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Start Game Now</button>
+            <div style="font-size: 0.7rem; margin-top: 10px; color: #999;">Click the button if the game doesn't load automatically</div>
+        </div>
+        
+        <!-- Character Selection Screen -->
+        <div id="character-selection" style="display: none;">
+            <img src="assets/images/mainboard_wo_bg.png" alt="GenAI Jungle Quest" class="title-board">
+            <h2 class="selection-title">Choose Your Explorer</h2>
+            
+            <div class="characters-container">
+                <div class="character-option" onclick="selectCharacter('male')">
+                    <img src="assets/images/male character option_wo_bg.png" alt="Male Explorer" class="character-image">
+                    <div class="character-name">Male Explorer</div>
+                </div>
+                
+                <div class="character-option" onclick="selectCharacter('female')">
+                    <img src="assets/images/female_character_option_wo_bg.png" alt="Female Explorer" class="character-image">
+                    <div class="character-name">Female Explorer</div>
+                </div>
+            </div>
+            
+            <div class="instructions">
+                <h3>How to Play:</h3>
+                <p>Navigate through the jungle by choosing the correct path. One path is a FACT about GenAI, the other is a MYTH.</p>
+                <p>Always choose the FACT path to progress!</p>
+                <p>You have 3 lives. Choose wisely!</p>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="game-screen">
+            <div class="game-header">
+                <div id="score-container">Score: 0</div>
+                <div id="lives-container">Lives: ❤️❤️❤️</div>
+            </div>
+            
+            <!-- Desktop jungle background -->
+            <img src="assets/images/jungle_main_2_roads_16_9.png" alt="Jungle with two roads" class="jungle-background jungle-background-desktop">
+            
+            <!-- Mobile jungle background -->
+            <img src="assets/images/jungle_main_2_roads_mobile.png" alt="Jungle with two roads" class="jungle-background jungle-background-mobile">
+            
+            <img id="character-back" src="" alt="Explorer from behind" class="character-back">
+            
+            <img id="demon" src="assets/images/demon_wo_bg.png" alt="Demon" class="demon">
+            
+            <div class="road-choices">
+                <button id="left-choice" class="left-road-choice" onclick="selectAnswer('left')">
+                    <img src="assets/images/left_road_choice_wo_bg.png" alt="Choose left road" class="road-button">
+                    <span id="left-text" class="choice-text"></span>
+                </button>
+                
+                <button id="right-choice" class="right-road-choice" onclick="selectAnswer('right')">
+                    <img src="assets/images/right_road_choice_wo_bg.png" alt="Choose right road" class="road-button">
+                    <span id="right-text" class="choice-text"></span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Result Screen -->
+        <div id="result-screen">
+            <img id="result-image" src="" alt="" class="result-image">
+            <div class="result-details">
+                <h2 id="result-title"></h2>
+                <p id="result-message"></p>
+                <p id="final-score" class="final-score"></p>
+                <button class="submit-score-button" onclick="openFormModal()">Submit Score</button>
+                <button class="restart-button" onclick="restartGame()">Play Again</button>
+            </div>
+        </div>
+        
+        <!-- Form Submission Modal -->
+        <div id="form-modal">
+            <div class="form-content">
+                <h2>Submit Your Score</h2>
+                <div class="form-info">
+                    <p><strong>Score:</strong> <span id="form-score"></span></p>
+                    <p><strong>Time Taken:</strong> <span id="form-time"></span></p>
+                    <p><strong>Date:</strong> <span id="form-date"></span></p>
+                </div>
+                <form id="score-form">
+                    <div class="form-group">
+                        <label for="player-name">Name:</label>
+                        <input type="text" id="player-name" name="name" required maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="player-email">Email:</label>
+                        <input type="email" id="player-email" name="email" required>
+                    </div>
+
+                    <div class="form-buttons">
+                        <button type="submit" class="form-submit-button">Submit</button>
+                        <button type="button" class="form-cancel-button" onclick="closeFormModal()">Cancel</button>
+                    </div>
+                </form>
+                <div id="submission-message" class="submission-message"></div>
+            </div>
+        </div>
+        
+        <!-- Incorrect Answer Popup -->
+        <div id="incorrect-popup">
+            <div class="popup-content">
+                <img src="assets/images/incoreect_answer.png" alt="Incorrect Answer" class="incorrect-image">
+                <h2>Incorrect Answer!</h2>
+                <p>That was a myth, not a fact about GenAI.</p>
+                <p><strong>The demon is getting closer! Answer correctly or it will catch you!</strong></p>
+                <p id="lives-remaining"></p>
+                <button class="try-again-button" onclick="tryAgain()">Try Again</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Audio Elements -->
+    <audio id="correct-sound" src="assets/audio/correct_answer.mp3"></audio>
+    <audio id="wrong-sound" src="assets/audio/wrong_answer.mp3"></audio>
+    <audio id="winner-sound" src="assets/audio/applause_winner.mp3"></audio>
+
+<script src="js/QuizLogic.js" type="text/javascript"></script>
+</body>
+</html>

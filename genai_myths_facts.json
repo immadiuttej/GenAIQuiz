@@ -1,0 +1,184 @@
+{
+  "questions": [
+    {
+      "id": 1,
+      "fact": "AI models like GPT-4 are trained on large datasets of text from the internet and books.",
+      "myth": "AI models like GPT-4 have access to the live internet and can browse websites in real-time.",
+      "difficulty": 1
+    },
+    {
+      "id": 2,
+      "fact": "Generative AI can create new content like text, images, and music based on patterns it learned during training.",
+      "myth": "Generative AI creates truly original content that has never existed before, completely independent of its training data.",
+      "difficulty": 1
+    },
+    {
+      "id": 3,
+      "fact": "AI image generators like DALL-E and Midjourney create images based on text descriptions.",
+      "myth": "AI image generators take photos of real objects and just modify them slightly.",
+      "difficulty": 1
+    },
+    {
+      "id": 4,
+      "fact": "Large Language Models (LLMs) predict the next word in a sequence based on probability.",
+      "myth": "Large Language Models (LLMs) understand the meaning of words the same way humans do.",
+      "difficulty": 2
+    },
+    {
+      "id": 5,
+      "fact": "AI models can make mistakes and generate incorrect information sometimes called 'hallucinations'.",
+      "myth": "AI models always provide 100% accurate information because they're programmed to be error-free.",
+      "difficulty": 2
+    },
+    {
+      "id": 6,
+      "fact": "Prompt engineering is the practice of crafting effective inputs to get better outputs from AI models.",
+      "myth": "Prompt engineering is the process of physically building AI hardware components.",
+      "difficulty": 2
+    },
+    {
+      "id": 7,
+      "fact": "AI models can be fine-tuned on specific datasets to improve performance for particular tasks.",
+      "myth": "Once an AI model is created, its capabilities are fixed and cannot be modified or improved.",
+      "difficulty": 2
+    },
+    {
+      "id": 8,
+      "fact": "Generative AI models have parameters that can number in the billions or trillions.",
+      "myth": "The more parameters an AI model has, the slower it always becomes at generating responses.",
+      "difficulty": 3
+    },
+    {
+      "id": 9,
+      "fact": "AI can assist with creative tasks but works best when collaborating with human creativity.",
+      "myth": "AI will soon replace all creative professionals like artists, writers, and musicians.",
+      "difficulty": 3
+    },
+    {
+      "id": 10,
+      "fact": "Multimodal AI models can process and generate different types of content like text, images, and audio.",
+      "myth": "Each AI model can only work with one type of data - either text, images, or audio, but never multiple types.",
+      "difficulty": 3
+    },
+    {
+      "id": 11,
+      "fact": "AI models have a 'context window' that limits how much information they can consider at once.",
+      "myth": "AI models have unlimited memory and can remember everything from all previous conversations forever.",
+      "difficulty": 3
+    },
+    {
+      "id": 12,
+      "fact": "Transfer learning allows AI models to apply knowledge from one task to help with another task.",
+      "myth": "Each AI model must be built from scratch for every new task with no ability to transfer knowledge.",
+      "difficulty": 4
+    },
+    {
+      "id": 13,
+      "fact": "AI models reflect biases present in their training data, which researchers work to identify and mitigate.",
+      "myth": "AI is completely objective and free from any human biases because it's just math and code.",
+      "difficulty": 4
+    },
+    {
+      "id": 14,
+      "fact": "Reinforcement Learning from Human Feedback (RLHF) helps align AI models with human preferences.",
+      "myth": "AI models learn entirely on their own with no human input after their initial creation.",
+      "difficulty": 4
+    },
+    {
+      "id": 15,
+      "fact": "AI models consume significant energy during training, but inference (using the trained model) requires less.",
+      "myth": "AI has no environmental impact because it's all digital and doesn't use physical resources.",
+      "difficulty": 4
+    },
+    {
+      "id": 16,
+      "fact": "AI can generate code to help programmers but often requires human review and modification.",
+      "myth": "AI can build complete, complex software applications without any human intervention.",
+      "difficulty": 4
+    },
+    {
+      "id": 17,
+      "fact": "Generative AI models can be used to create synthetic data for training other AI systems.",
+      "myth": "Using AI to generate training data for other AI systems always creates perfect, bias-free datasets.",
+      "difficulty": 5
+    },
+    {
+      "id": 18,
+      "fact": "Foundation models are large AI systems trained on broad data that can be adapted for specific applications.",
+      "myth": "Each AI application requires its own completely separate model trained from scratch.",
+      "difficulty": 5
+    },
+    {
+      "id": 19,
+      "fact": "AI systems can be designed with guardrails to prevent harmful outputs.",
+      "myth": "AI systems either have complete freedom or no freedom - there's no middle ground for safety measures.",
+      "difficulty": 5
+    },
+    {
+      "id": 20,
+      "fact": "Generative AI models can sometimes produce outputs that appear to violate copyright or contain private information.",
+      "myth": "AI-generated content is always completely original and can never contain elements from copyrighted works.",
+      "difficulty": 5
+    },
+    {
+      "id": 21,
+      "fact": "AI models can be distilled into smaller versions that retain much of their capability but run more efficiently.",
+      "myth": "The only way to improve AI performance is to make models larger with more parameters.",
+      "difficulty": 5
+    },
+    {
+      "id": 22,
+      "fact": "Generative AI can help with brainstorming by suggesting ideas humans might not think of.",
+      "myth": "AI creativity is completely random and produces mostly unusable suggestions.",
+      "difficulty": 3
+    },
+    {
+      "id": 23,
+      "fact": "AI models can be evaluated using benchmarks to measure their performance on specific tasks.",
+      "myth": "There's no way to measure or compare the capabilities of different AI models objectively.",
+      "difficulty": 3
+    },
+    {
+      "id": 24,
+      "fact": "AI can translate between languages but may miss cultural nuances and context-specific meanings.",
+      "myth": "AI translation is perfect and has completely eliminated the need for human translators.",
+      "difficulty": 2
+    },
+    {
+      "id": 25,
+      "fact": "Generative AI models can be fine-tuned to follow specific style guidelines or brand voices.",
+      "myth": "AI-generated content always sounds robotic and can never match a specific human writing style.",
+      "difficulty": 2
+    },
+    {
+      "id": 26,
+      "fact": "AI models can be deployed on various hardware from cloud servers to mobile devices.",
+      "myth": "AI can only run on supercomputers due to its complexity and processing requirements.",
+      "difficulty": 1
+    },
+    {
+      "id": 27,
+      "fact": "AI can help analyze large datasets to find patterns humans might miss.",
+      "myth": "AI analysis of data is just a fancy term for basic statistical methods that have existed for decades.",
+      "difficulty": 1
+    },
+    {
+      "id": 28,
+      "fact": "AI models can be combined with human expertise to create hybrid workflows.",
+      "myth": "AI implementation is an all-or-nothing approach where humans must be completely removed from the process.",
+      "difficulty": 2
+    },
+    {
+      "id": 29,
+      "fact": "Different AI models have different strengths and are suited for different types of tasks.",
+      "myth": "There is one 'best' AI model that outperforms all others on every possible task.",
+      "difficulty": 3
+    },
+    {
+      "id": 30,
+      "fact": "AI models can be personalized to better serve individual users' needs and preferences.",
+      "myth": "All users receive identical outputs from AI systems with no possibility for personalization.",
+      "difficulty": 3
+    }
+  ]
+}
