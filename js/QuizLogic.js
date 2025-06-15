@@ -19,11 +19,54 @@
             formSubmitted: false
         };
         
-        // Local storage key for scores
-        const SCORES_STORAGE_KEY = 'genai_jungle_quest_scores';
+
+        // Background images for each question (cycle through a few variations)
+        const backgroundImagesDesktop = [
+            'assets/images/scenes/desktop/jungle_2paths_1.png',
+            'assets/images/scenes/desktop/jungle_2paths_2.png',
+            'assets/images/scenes/desktop/jungle_2paths_3.png',
+            'assets/images/scenes/desktop/jungle_2paths_4.png',
+            'assets/images/scenes/desktop/jungle_2paths_5.png',
+            'assets/images/scenes/desktop/jungle_2paths_6.png',
+            'assets/images/scenes/desktop/jungle_2paths_7.png',
+            'assets/images/scenes/desktop/jungle_2paths_8.png',
+            'assets/images/scenes/desktop/jungle_2paths_9.png',
+            'assets/images/scenes/desktop/jungle_2paths_10.png'
+        ];
+
+        // Mobile background images (cycle through variations)
+        const backgroundImagesMobile = [
+            'assets/images/scenes/mobile/jungle_2paths_mobile_1.png',
+            'assets/images/scenes/mobile/jungle_2paths_mobile_2.png',
+            'assets/images/scenes/mobile/jungle_2paths_mobile_3.png',
+            'assets/images/scenes/mobile/jungle_2paths_mobile_4.png',
+            'assets/images/scenes/mobile/jungle_2paths_mobile_5.png',
+            'assets/images/scenes/mobile/jungle_2paths_mobile_6.png',
+            'assets/images/scenes/mobile/jungle_2paths_mobile_7.png',
+            'assets/images/scenes/mobile/jungle_2paths_mobile_8.png',
+            'assets/images/scenes/mobile/jungle_2paths_mobile_9.png',
+            'assets/images/scenes/mobile/jungle_2paths_mobile_10.png'
+        ];
+
+        // Helper to determine if we are on a mobile sized screen
+        function isMobileScreen() {
+            return window.matchMedia('(max-width: 768px)').matches;
+        }
+
+        // Get correct winner/loser image based on device
+        function getResultImage(type) {
+            const suffix = isMobileScreen() ? 'mobile' : 'desktop';
+            return `assets/images/${type}_screen_${suffix}.png`;
+        }
+        // Preload an image to avoid flicker during transitions
+        function preloadImage(src) {
+            const img = new Image();
+            img.src = src;
+        }
         
         // Audio elements
         let correctSound, wrongSound, winnerSound;
+        let desktopBg, mobileBg, correctOverlay;
         
         // DOM elements
         let loadingScreen, characterSelection, gameScreen, resultScreen, incorrectPopup, formModal;
@@ -41,6 +84,9 @@
                 resultScreen = document.getElementById('result-screen');
                 incorrectPopup = document.getElementById('incorrect-popup');
                 formModal = document.getElementById('form-modal');
+                desktopBg = document.querySelector('.jungle-background-desktop');
+                mobileBg = document.querySelector('.jungle-background-mobile');
+                correctOverlay = document.getElementById('correct-overlay');
                 
                 console.log('DOM elements initialized successfully');
             } catch (error) {
@@ -140,12 +186,6 @@
             return shuffled.slice(0, Math.min(count, shuffled.length));
         }
         
-        // Local storage functions - REMOVED (keeping only for basic functionality)
-        function saveScore(scoreData) {
-            // Simplified - just return true since we're not storing scores anymore
-            return true;
-        }
-        
         // Select character
         function selectCharacter(character) {
             gameState.selectedCharacter = character;
@@ -169,6 +209,10 @@
             
             // Randomly decide which road (left or right) will have the fact
             gameState.factIsLeft = Math.random() > 0.5;
+
+            // Update background images
+            if (desktopBg) desktopBg.src = backgroundImagesDesktop[gameState.currentQuestionIndex % backgroundImagesDesktop.length];
+            if (mobileBg) mobileBg.src = backgroundImagesMobile[gameState.currentQuestionIndex % backgroundImagesMobile.length];
             
             // Set question texts
             document.getElementById('left-text').textContent = gameState.factIsLeft ? question.fact : question.myth;
@@ -186,25 +230,35 @@
             
             if (isCorrect) {
                 if (correctSound) correctSound.play();
-                
+
                 // Calculate score based on time and attempts
                 const timeTaken = Date.now() - gameState.startTime;
                 gameState.score += calculateScore(gameState.attempts, timeTaken);
-                
+
                 // Reset attempts and update questions answered
                 gameState.attempts = 0;
                 gameState.questionsAnswered++;
-                
-                // Check if game is won
-                if (gameState.questionsAnswered >= gameState.questions.length) {
-                    gameState.endTime = Date.now();
-                    gameWon();
-                } else {
-                    // Move to next question
-                    gameState.currentQuestionIndex++;
-                    gameState.startTime = Date.now();
-                    loadQuestion();
-                }
+
+                // Preload background for the next question during the transition
+                const nextIndex = gameState.currentQuestionIndex + 1;
+                const nextDesktop = backgroundImagesDesktop[nextIndex % backgroundImagesDesktop.length];
+                const nextMobile = backgroundImagesMobile[nextIndex % backgroundImagesMobile.length];
+                preloadImage(nextDesktop);
+                preloadImage(nextMobile);
+
+                showCorrectAnimation();
+                setTimeout(() => {
+                    swipeTransition(() => {
+                        if (gameState.questionsAnswered >= gameState.questions.length) {
+                            gameState.endTime = Date.now();
+                            gameWon();
+                        } else {
+                            gameState.currentQuestionIndex++;
+                            gameState.startTime = Date.now();
+                            loadQuestion();
+                        }
+                    });
+                }, 150);
             } else {
                 if (wrongSound) wrongSound.play();
                 
@@ -255,11 +309,32 @@
         function tryAgain() {
             if (incorrectPopup) incorrectPopup.style.display = 'none';
         }
+
+        function showCorrectAnimation() {
+            if (correctOverlay) {
+                correctOverlay.classList.add('correct-show');
+                setTimeout(() => {
+                    correctOverlay.classList.remove('correct-show');
+                }, 800);
+            }
+        }
+
+        function swipeTransition(callback) {
+            if (gameScreen) {
+                gameScreen.classList.add('swipe-transition');
+                if (callback) callback();
+                setTimeout(() => {
+                    gameScreen.classList.remove('swipe-transition');
+                }, 400);
+            } else if (callback) {
+                callback();
+            }
+        }
         
         // Game over
         function gameOver() {
             // Show result screen with loser image
-            document.getElementById('result-image').src = 'assets/images/loser_screen.png';
+            document.getElementById('result-image').src = getResultImage('loser');
             document.getElementById('result-title').textContent = 'You Got Lost!';
             document.getElementById('result-message').textContent = 'Better luck next time navigating the GenAI Jungle!';
             document.getElementById('final-score').textContent = `Final Score: ${gameState.score}`;
@@ -272,9 +347,9 @@
         function gameWon() {
             // Play winner sound
             if (winnerSound) winnerSound.play();
-            
+
             // Show result screen with winner image
-            document.getElementById('result-image').src = 'assets/images/winner_screen.png';
+            document.getElementById('result-image').src = getResultImage('winner');
             document.getElementById('result-title').textContent = 'Congratulations!';
             document.getElementById('result-message').textContent = 'You successfully navigated the GenAI Jungle!';
             document.getElementById('final-score').textContent = `Final Score: ${gameState.score}`;
@@ -408,21 +483,6 @@
                     messageDiv.style.display = 'none';
                     
                     try {
-                        // Create score data for local storage
-                        const timeTaken = gameState.endTime - gameState.gameStartTime;
-                        const scoreData = {
-                            name: name,
-                            email: email,
-                            score: gameState.score,
-                            time: formatTimeTaken(timeTaken),
-                            date: new Date().toISOString(),
-                            character: gameState.selectedCharacter,
-                            questionsAnswered: gameState.questionsAnswered,
-                            totalQuestions: gameState.questions.length
-                        };
-                        
-                        // Save to local storage for leaderboard
-                        const localSaved = saveScore(scoreData);
                         
                         // Submit to Google Form using iframe method
                         const googleFormResult = await submitToGoogleForm(name, email);
@@ -499,7 +559,7 @@
             
             // Make sure we have questions
             if (!gameState.questions || gameState.questions.length === 0) {
-                gameState.questions = getRandomQuestions(sampleQuestions.questions, 15);
+                gameState.questions = getRandomQuestions(sampleQuestions.questions, 10);
             }
             
             if (loadingScreen) loadingScreen.style.display = 'none';
@@ -521,13 +581,13 @@
                 })
                 .then(data => {
                     console.log('Successfully loaded', data.questions.length, 'questions from JSON file');
-                    gameState.questions = getRandomQuestions(data.questions, 15);
+                    gameState.questions = getRandomQuestions(data.questions, 10);
                     showCharacterSelection();
                 })
                 .catch(err => {
                     console.log('Could not load JSON file:', err.message);
                     console.log('Using built-in questions instead');
-                    gameState.questions = getRandomQuestions(sampleQuestions.questions, 15);
+                    gameState.questions = getRandomQuestions(sampleQuestions.questions, 10);
                     showCharacterSelection();
                 });
         }, 500);

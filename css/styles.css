@@ -581,6 +581,47 @@
         .try-again-button:hover {
             background-color: #d32f2f;
         }
+
+        /* Correct Answer Overlay */
+        #correct-overlay {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: bold;
+            color: #00ff99;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+
+            z-index: 150; /* above headers */
+            display: none;
+            pointer-events: none;
+
+        }
+
+        .correct-show {
+            display: block;
+            animation: correctFlash 1s forwards;
+
+        }
+
+        @keyframes correctFlash {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        /* Slide-and-fade transition for next question */
+        .swipe-transition {
+            animation: slideFade 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideFade {
+            0% { opacity: 0; transform: translateX(30px) scale(0.95); }
+            60% { opacity: 1; transform: translateX(-5px) scale(1); }
+            100% { opacity: 1; transform: translateX(0); }
+
+        }
         
         /* Loading */
         #loading {
