@@ -225,6 +225,9 @@ async function monitorSlot() {
             ]
         };
 
+        // Full question bank loaded from JSON or fallback
+        let questionBank = [];
+
         // Get random questions
         function getRandomQuestions(allQuestions, count) {
             const result = [];
@@ -620,6 +623,13 @@ async function monitorSlot() {
             gameState.questionsAnswered = 0;
             gameState.demonAppeared = false;
             gameState.formSubmitted = false;
+
+            // Pick a new set of questions
+            if (questionBank && questionBank.length > 0) {
+                gameState.questions = getRandomQuestions(questionBank, 10);
+            } else {
+                gameState.questions = getRandomQuestions(sampleQuestions.questions, 10);
+            }
             
             // Hide the demon
             document.getElementById('demon').style.display = 'none';
@@ -648,7 +658,12 @@ async function monitorSlot() {
             
             // Make sure we have questions
             if (!gameState.questions || gameState.questions.length === 0) {
-                gameState.questions = getRandomQuestions(sampleQuestions.questions, 10);
+                if (questionBank && questionBank.length > 0) {
+                    gameState.questions = getRandomQuestions(questionBank, 10);
+                } else {
+                    questionBank = sampleQuestions.questions;
+                    gameState.questions = getRandomQuestions(questionBank, 10);
+                }
             }
             
             if (loadingScreen) loadingScreen.style.display = 'none';
@@ -673,13 +688,15 @@ async function monitorSlot() {
                 })
                 .then(data => {
                     console.log('Successfully loaded', data.questions.length, 'questions from JSON file');
-                    gameState.questions = getRandomQuestions(data.questions, 10);
+                    questionBank = data.questions;
+                    gameState.questions = getRandomQuestions(questionBank, 10);
                     showCharacterSelection();
                 })
                 .catch(err => {
                     console.log('Could not load JSON file:', err.message);
                     console.log('Using built-in questions instead');
-                    gameState.questions = getRandomQuestions(sampleQuestions.questions, 10);
+                    questionBank = sampleQuestions.questions;
+                    gameState.questions = getRandomQuestions(questionBank, 10);
                     showCharacterSelection();
                 });
         }, 500);
