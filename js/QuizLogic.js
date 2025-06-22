@@ -1,6 +1,8 @@
         // GenAI Jungle Quest Game with Integrated Form Submission
         
         console.log('GenAI Jungle Quest script started');
+
+        const API_BASE = 'https://epam-genai-dashboard.azurewebsites.net';
         
         // Game state
         const gameState = {
@@ -16,7 +18,8 @@
             questionsAnswered: 0,
             factIsLeft: false,
             demonAppeared: false,
-            formSubmitted: false
+            formSubmitted: false,
+            activeSlot: null
         };
         
 
@@ -62,6 +65,48 @@
         function preloadImage(src) {
             const img = new Image();
             img.src = src;
+        }
+
+        // Preload all background images on startup
+        function preloadAllBackgroundImages() {
+            backgroundImagesDesktop.forEach(preloadImage);
+            backgroundImagesMobile.forEach(preloadImage);
+        }
+
+
+async function fetchActiveSlot() {
+    try {
+        const res = await fetch(`${API_BASE}/api/slots`);
+        const data = await res.json();
+        return data.find(s => s.status === 'active' || s.active) || null;
+    } catch (err) {
+        console.error('Error fetching slots:', err);
+        return null;
+    }
+}
+
+async function monitorSlot() {
+    while (true) {
+        await new Promise(r => setTimeout(r, 15000));
+        const slot = await fetchActiveSlot();
+        if (!slot || !gameState.activeSlot || slot.id !== gameState.activeSlot.id) {
+            await waitForActiveSlot();
+        } else {
+            gameState.activeSlot = slot;
+        }
+    }
+}
+
+        async function waitForActiveSlot() {
+            const overlay = document.getElementById('standby-overlay');
+            let slot = await fetchActiveSlot();
+            if (!slot && overlay) overlay.style.display = 'flex';
+            while (!slot) {
+                await new Promise(r => setTimeout(r, 10000));
+                slot = await fetchActiveSlot();
+            }
+            if (overlay) overlay.style.display = 'none';
+            gameState.activeSlot = slot;
         }
         
         // Audio elements
@@ -182,8 +227,20 @@
 
         // Get random questions
         function getRandomQuestions(allQuestions, count) {
-            const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, Math.min(count, shuffled.length));
+            const result = [];
+            const takenIndexes = new Set();
+            const total = allQuestions.length;
+            const max = Math.min(count, total);
+
+            while (result.length < max) {
+                const idx = Math.floor(Math.random() * total);
+                if (!takenIndexes.has(idx)) {
+                    takenIndexes.add(idx);
+                    result.push(allQuestions[idx]);
+                }
+            }
+
+            return result;
         }
         
         // Select character
@@ -398,7 +455,7 @@
         }
         
         // Submit to Google Form using iframe method (CSP-friendly)
-        async function submitToGoogleForm(name, email) {
+        async function submitToGoogleForm(name, email, location) {
             const timeTaken = gameState.endTime - gameState.gameStartTime;
             const currentDate = new Date();
             const submissionDateTime = currentDate.toLocaleString();
@@ -424,7 +481,8 @@
                     { name: 'entry.2062066101', value: name }, // Name
                     { name: 'entry.619908854', value: email }, // Email
                     { name: 'entry.439563429', value: timeTakenStr }, // Time Taken
-                    { name: 'entry.1699034838', value: gameState.score.toString() } // Score
+                    { name: 'entry.1699034838', value: gameState.score.toString() }, // Score
+                    { name: 'entry.0000000000', value: location } // Location (placeholder ID)
                 ];
                 
                 // Create input elements
@@ -454,6 +512,29 @@
                 return { success: false, error: error.message };
             }
         }
+
+        async function submitToDashboard(name, email, location) {
+            const timeTakenMs = gameState.endTime - gameState.gameStartTime;
+            const payload = {
+                name,
+                email,
+                score: gameState.score,
+                timetaken: Math.floor(timeTakenMs / 1000),
+                displaytime: new Date(timeTakenMs).toISOString().substring(14, 19),
+                location
+            };
+            try {
+                const res = await fetch(`${API_BASE}/api/player`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                console.log('Dashboard submit', data);
+            } catch (err) {
+                console.error('Error submitting to dashboard:', err);
+            }
+        }
         
         // Handle form submission
         document.addEventListener('DOMContentLoaded', function() {
@@ -464,11 +545,12 @@
                     
                     const name = document.getElementById('player-name').value.trim();
                     const email = document.getElementById('player-email').value.trim();
+                    const location = document.getElementById('player-location').value;
                     const submitButton = e.target.querySelector('.form-submit-button');
                     const messageDiv = document.getElementById('submission-message');
                     
                     // Validate inputs
-                    if (!name || !email) {
+                    if (!name || !email || !location) {
                         messageDiv.textContent = 'Please fill in all required fields.';
                         messageDiv.className = 'submission-message submission-error';
                         messageDiv.style.display = 'block';
@@ -485,7 +567,9 @@
                     try {
                         
                         // Submit to Google Form using iframe method
-                        const googleFormResult = await submitToGoogleForm(name, email);
+                        const googleFormResult = await submitToGoogleForm(name, email, location);
+                        // Also submit to dashboard
+                        submitToDashboard(name, email, location);
                         
                         if (googleFormResult.success) {
                             gameState.formSubmitted = true;
@@ -549,12 +633,17 @@
         }
         
         // Skip loading function
-        function skipLoading() {
+        async function skipLoading() {
             console.log('Manually starting game');
-            
+
             // Make sure DOM elements are initialized
             if (!loadingScreen) {
                 initializeDOMElements();
+            }
+
+            if (!gameState.activeSlot) {
+                await waitForActiveSlot();
+
             }
             
             // Make sure we have questions
@@ -567,11 +656,14 @@
         }
         
         // Simple initialization
-        setTimeout(function() {
+        setTimeout(async function() {
             console.log('Initializing game...');
             initializeDOMElements();
-            
-            // Try to fetch questions from JSON first
+            preloadAllBackgroundImages();
+
+            await waitForActiveSlot();
+            monitorSlot();
+
             console.log('Attempting to load questions from: ./genai_myths_facts.json');
             fetch('./genai_myths_facts.json')
                 .then(response => {

@@ -1,1 +1,2 @@
-# Gen-AI Quiz
+# GenAIQuiz
+GenAI Quiz

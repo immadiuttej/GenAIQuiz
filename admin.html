@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div id="admin-container">
+        <div id="login-form" class="card">
+            <h2>Admin Login</h2>
+            <input type="text" id="admin-user" placeholder="Username">
+            <input type="password" id="admin-pass" placeholder="Password">
+            <button id="login-btn">Login</button>
+            <div id="login-message"></div>
+        </div>
+        <div id="dashboard" class="card" style="display:none;">
+            <h2>Game Slots</h2>
+            <div id="slot-info"></div>
+            <button id="start-slot-btn">Start New Slot</button>
+            <button id="stop-slot-btn">Stop Slot</button>
+        </div>
+    </div>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

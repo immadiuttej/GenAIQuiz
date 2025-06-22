@@ -1,0 +1,61 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+
+#admin-container {
+    width: 90%;
+    max-width: 420px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 30px 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.card h2 {
+    margin-bottom: 20px;
+}
+
+.card input {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.card button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 5px;
+    transition: background 0.2s ease;
+}
+
+.card button:hover {
+    background: #0056b3;
+}
+
+#login-message {
+    color: #dc3545;
+    margin-top: 5px;
+}
+
+#slot-info {
+    margin: 15px 0;
+    font-weight: bold;
+}
+
