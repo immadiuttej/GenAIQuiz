@@ -23,25 +23,27 @@
         <!-- Character Selection Screen -->
         <div id="character-selection" style="display: none;">
             <img src="assets/images/mainboard_wo_bg.png" alt="GenAI Jungle Quest" class="title-board">
-            <h2 class="selection-title">Choose Your Explorer</h2>
+            <h2 class="selection-title">Choose Your Character</h2>
             
             <div class="characters-container">
                 <div class="character-option" onclick="selectCharacter('male')">
-                    <img src="assets/images/male character option_wo_bg.png" alt="Male Explorer" class="character-image">
-                    <div class="character-name">Male Explorer</div>
+                    <img src="assets/images/male character option_wo_bg.png" alt="Krishna" class="character-image">
+                    <div class="character-name">Krishna</div>
                 </div>
                 
                 <div class="character-option" onclick="selectCharacter('female')">
-                    <img src="assets/images/female_character_option_wo_bg.png" alt="Female Explorer" class="character-image">
-                    <div class="character-name">Female Explorer</div>
+                    <img src="assets/images/female_character_option_wo_bg.png" alt="Radha" class="character-image">
+                    <div class="character-name">Radha</div>
                 </div>
             </div>
             
             <div class="instructions">
                 <h3>How to Play:</h3>
-                <p>Navigate through the jungle by choosing the correct path. One path is a FACT about GenAI, the other is a MYTH.</p>
-                <p>Always choose the FACT path to progress!</p>
-                <p>You have 3 lives. Choose wisely!</p>
+                <p>Begin by selecting Krishna or Radha to start your quest.</p>
+                <p>Each junction shows two statements about GenAI—one FACT and one MYTH.</p>
+                <p>Tap or click the path with the FACT to move forward and earn points.</p>
+                <p>Choosing a MYTH costs you one of your three lives.</p>
+                <p>Answer quickly to boost your score and reach the end of the jungle!</p>
             </div>
         </div>
         
@@ -85,32 +87,28 @@
                 <h2 id="result-title"></h2>
                 <p id="result-message"></p>
                 <p id="final-score" class="final-score"></p>
-                <button class="submit-score-button" onclick="openFormModal()">Submit Score</button>
+                <p id="auto-submit-msg" class="submission-message" style="display:none;"></p>
                 <button class="restart-button" onclick="restartGame()">Play Again</button>
             </div>
         </div>
-        
-        <!-- Form Submission Modal -->
-        <div id="form-modal">
+
+        <!-- Player Info Modal -->
+        <div id="info-modal">
             <div class="form-content">
-                <h2>Submit Your Score</h2>
-                <div class="form-info">
-                    <p><strong>Score:</strong> <span id="form-score"></span></p>
-                    <p><strong>Time Taken:</strong> <span id="form-time"></span></p>
-                    <p><strong>Date:</strong> <span id="form-date"></span></p>
-                </div>
-                <form id="score-form">
+                <h2>Enter Your Details</h2>
+                <form id="info-form">
                     <div class="form-group">
-                        <label for="player-name">Name:</label>
-                        <input type="text" id="player-name" name="name" required maxlength="50">
+                        <label for="info-name">Name:</label>
+                        <input type="text" id="info-name" name="name" required maxlength="50">
                     </div>
                     <div class="form-group">
-                        <label for="player-email">Email:</label>
-                        <input type="email" id="player-email" name="email" required>
+                        <label for="info-email">Email:</label>
+                        <input type="email" id="info-email" name="email" required>
                     </div>
                     <div class="form-group">
-                        <label for="player-location">Location:</label>
-                        <select id="player-location" name="location" required>
+                        <label for="info-location">Location:</label>
+                        <select id="info-location" name="location" required>
+                            <option value="" disabled selected>Select location</option>
                             <option value="Hyderabad">Hyderabad</option>
                             <option value="Pune">Pune</option>
                             <option value="Chennai">Chennai</option>
@@ -120,11 +118,10 @@
                     </div>
 
                     <div class="form-buttons">
-                        <button type="submit" class="form-submit-button">Submit</button>
-                        <button type="button" class="form-cancel-button" onclick="closeFormModal()">Cancel</button>
+                        <button type="submit" class="form-submit-button">Start Game</button>
                     </div>
                 </form>
-                <div id="submission-message" class="submission-message"></div>
+                <div id="info-message" class="submission-message"></div>
             </div>
         </div>
         

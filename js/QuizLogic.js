@@ -19,7 +19,10 @@
             factIsLeft: false,
             demonAppeared: false,
             formSubmitted: false,
-            activeSlot: null
+            activeSlot: null,
+            playerName: '',
+            playerEmail: '',
+            playerLocation: ''
         };
         
 
@@ -114,7 +117,7 @@ async function monitorSlot() {
         let desktopBg, mobileBg, correctOverlay;
         
         // DOM elements
-        let loadingScreen, characterSelection, gameScreen, resultScreen, incorrectPopup, formModal;
+        let loadingScreen, characterSelection, gameScreen, resultScreen, incorrectPopup, infoModal;
         
         // Initialize DOM elements after page load
         function initializeDOMElements() {
@@ -128,7 +131,7 @@ async function monitorSlot() {
                 gameScreen = document.getElementById('game-screen');
                 resultScreen = document.getElementById('result-screen');
                 incorrectPopup = document.getElementById('incorrect-popup');
-                formModal = document.getElementById('form-modal');
+                infoModal = document.getElementById('info-modal');
                 desktopBg = document.querySelector('.jungle-background-desktop');
                 mobileBg = document.querySelector('.jungle-background-mobile');
                 correctOverlay = document.getElementById('correct-overlay');
@@ -401,6 +404,8 @@ async function monitorSlot() {
             
             if (gameScreen) gameScreen.style.display = 'none';
             if (resultScreen) resultScreen.style.display = 'block';
+
+            autoSubmitScore();
         }
         
         // Game won
@@ -416,6 +421,8 @@ async function monitorSlot() {
             
             if (gameScreen) gameScreen.style.display = 'none';
             if (resultScreen) resultScreen.style.display = 'block';
+
+            autoSubmitScore();
         }
         
         // Format time taken
@@ -431,29 +438,17 @@ async function monitorSlot() {
             }
         }
         
-        // Open form modal
-        function openFormModal() {
-            const timeTaken = gameState.endTime - gameState.gameStartTime;
-            const currentDate = new Date();
-            
-            // Populate form info
-            document.getElementById('form-score').textContent = gameState.score;
-            document.getElementById('form-time').textContent = formatTimeTaken(timeTaken);
-            document.getElementById('form-date').textContent = currentDate.toLocaleString();
-            
-            // Show modal
-            if (formModal) formModal.style.display = 'flex';
+        // Show info modal
+        function openInfoModal() {
+            if (infoModal) infoModal.style.display = 'flex';
         }
-        
-        // Close form modal
-        function closeFormModal() {
-            if (formModal) formModal.style.display = 'none';
-            
-            // Reset form
-            document.getElementById('score-form').reset();
-            
-            // Hide any messages
-            const messageDiv = document.getElementById('submission-message');
+
+        // Close info modal
+        function closeInfoModal() {
+            if (infoModal) infoModal.style.display = 'none';
+
+            document.getElementById('info-form').reset();
+            const messageDiv = document.getElementById('info-message');
             messageDiv.style.display = 'none';
         }
         
@@ -516,7 +511,7 @@ async function monitorSlot() {
             }
         }
 
-        async function submitToDashboard(name, email, location) {
+async function submitToDashboard(name, email, location) {
             const timeTakenMs = gameState.endTime - gameState.gameStartTime;
             const payload = {
                 name,
@@ -538,19 +533,39 @@ async function monitorSlot() {
                 console.error('Error submitting to dashboard:', err);
             }
         }
+
+        async function autoSubmitScore() {
+            const { playerName, playerEmail, playerLocation } = gameState;
+            if (!playerName || !playerEmail || !playerLocation) return;
+
+            const googleFormResult = await submitToGoogleForm(playerName, playerEmail, playerLocation);
+            submitToDashboard(playerName, playerEmail, playerLocation);
+
+            const msg = document.getElementById('auto-submit-msg');
+            if (msg) {
+                if (googleFormResult.success) {
+                    msg.textContent = 'Score submitted automatically!';
+                    msg.className = 'submission-message submission-success';
+                } else {
+                    msg.textContent = 'Score submission failed.';
+                    msg.className = 'submission-message submission-error';
+                }
+                msg.style.display = 'block';
+            }
+        }
         
-        // Handle form submission
+        // Handle player info submission
         document.addEventListener('DOMContentLoaded', function() {
-            const scoreForm = document.getElementById('score-form');
-            if (scoreForm) {
-                scoreForm.addEventListener('submit', async (e) => {
+            const infoForm = document.getElementById('info-form');
+            if (infoForm) {
+                infoForm.addEventListener('submit', (e) => {
                     e.preventDefault();
-                    
-                    const name = document.getElementById('player-name').value.trim();
-                    const email = document.getElementById('player-email').value.trim();
-                    const location = document.getElementById('player-location').value;
+
+                    const name = document.getElementById('info-name').value.trim();
+                    const email = document.getElementById('info-email').value.trim();
+                    const location = document.getElementById('info-location').value;
                     const submitButton = e.target.querySelector('.form-submit-button');
-                    const messageDiv = document.getElementById('submission-message');
+                    const messageDiv = document.getElementById('info-message');
                     
                     // Validate inputs
                     if (!name || !email || !location) {
@@ -560,52 +575,17 @@ async function monitorSlot() {
                         return;
                     }
                     
-                    // Disable submit button
+                    // Disable submit button and clear previous message
                     submitButton.disabled = true;
-                    submitButton.textContent = 'Submitting...';
-                    
-                    // Clear any previous messages
+                    submitButton.textContent = 'Starting...';
                     messageDiv.style.display = 'none';
-                    
-                    try {
-                        
-                        // Submit to Google Form using iframe method
-                        const googleFormResult = await submitToGoogleForm(name, email, location);
-                        // Also submit to dashboard
-                        submitToDashboard(name, email, location);
-                        
-                        if (googleFormResult.success) {
-                            gameState.formSubmitted = true;
-                            messageDiv.textContent = 'Score submitted successfully! Thank you for playing!';
-                            messageDiv.className = 'submission-message submission-success';
-                            messageDiv.style.display = 'block';
-                            
-                            // Close modal after 3 seconds
-                            setTimeout(() => {
-                                closeFormModal();
-                                submitButton.disabled = false;
-                                submitButton.textContent = 'Submit';
-                            }, 3000);
-                        } else {
-                            // If Google Form submission failed
-                            messageDiv.textContent = 'Score submission failed. Please try again.';
-                            messageDiv.className = 'submission-message submission-error';
-                            messageDiv.style.display = 'block';
-                            
-                            // Re-enable submit button
-                            submitButton.disabled = false;
-                            submitButton.textContent = 'Submit';
-                        }
-                    } catch (error) {
-                        console.error('Error submitting score:', error);
-                        messageDiv.textContent = 'Failed to submit score. Please try again.';
-                        messageDiv.className = 'submission-message submission-error';
-                        messageDiv.style.display = 'block';
-                        
-                        // Re-enable submit button
-                        submitButton.disabled = false;
-                        submitButton.textContent = 'Submit';
-                    }
+
+                    gameState.playerName = name;
+                    gameState.playerEmail = email;
+                    gameState.playerLocation = location;
+
+                    closeInfoModal();
+                    showCharacterSelection();
                 });
             }
         });
@@ -667,7 +647,7 @@ async function monitorSlot() {
             }
             
             if (loadingScreen) loadingScreen.style.display = 'none';
-            if (characterSelection) characterSelection.style.display = 'flex';
+            openInfoModal();
         }
         
         // Simple initialization
@@ -690,14 +670,14 @@ async function monitorSlot() {
                     console.log('Successfully loaded', data.questions.length, 'questions from JSON file');
                     questionBank = data.questions;
                     gameState.questions = getRandomQuestions(questionBank, 10);
-                    showCharacterSelection();
+                    openInfoModal();
                 })
                 .catch(err => {
                     console.log('Could not load JSON file:', err.message);
                     console.log('Using built-in questions instead');
                     questionBank = sampleQuestions.questions;
                     gameState.questions = getRandomQuestions(questionBank, 10);
-                    showCharacterSelection();
+                    openInfoModal();
                 });
         }, 500);
         

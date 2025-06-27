@@ -401,7 +401,7 @@
         }
         
         /* Form Submission Modal */
-        #form-modal {
+        #info-modal {
             display: none;
             position: fixed;
             top: 0;
