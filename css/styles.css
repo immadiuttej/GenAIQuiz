@@ -238,6 +238,14 @@
             right: 0;
             z-index: 10;
         }
+
+        #header-title {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+            pointer-events: none;
+        }
         
         .jungle-background {
             position: absolute;
