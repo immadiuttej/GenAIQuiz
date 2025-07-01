@@ -1,4 +1,4 @@
-const API_BASE = 'https://epam-genai-dashboard.azurewebsites.net';
+const API_BASE = 'https://epam-genai-junglequest-dashboard.azurewebsites.net';
 
 let currentSlot = null;
 

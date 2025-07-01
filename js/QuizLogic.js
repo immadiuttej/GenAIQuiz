@@ -2,7 +2,7 @@
         
         console.log('GenAI Jungle Quest script started');
 
-        const API_BASE = 'https://epam-genai-dashboard.azurewebsites.net';
+        const API_BASE = 'https://epam-genai-junglequest-dashboard.azurewebsites.net';
         
         // Game state
         const gameState = {
@@ -544,10 +544,10 @@ async function submitToDashboard(name, email, location) {
             const msg = document.getElementById('auto-submit-msg');
             if (msg) {
                 if (googleFormResult.success) {
-                    msg.textContent = 'Score submitted automatically!';
+                    msg.innerHTML = `Score submitted automatically! <a href="${API_BASE}" target="_blank">View Leaderboard</a>`;
                     msg.className = 'submission-message submission-success';
                 } else {
-                    msg.textContent = 'Score submission failed.';
+                    msg.innerHTML = 'Score submission failed.';
                     msg.className = 'submission-message submission-error';
                 }
                 msg.style.display = 'block';
@@ -558,7 +558,7 @@ async function submitToDashboard(name, email, location) {
         document.addEventListener('DOMContentLoaded', function() {
             const infoForm = document.getElementById('info-form');
             if (infoForm) {
-                infoForm.addEventListener('submit', (e) => {
+                infoForm.addEventListener('submit', async (e) => {
                     e.preventDefault();
 
                     const name = document.getElementById('info-name').value.trim();
@@ -566,7 +566,7 @@ async function submitToDashboard(name, email, location) {
                     const location = document.getElementById('info-location').value;
                     const submitButton = e.target.querySelector('.form-submit-button');
                     const messageDiv = document.getElementById('info-message');
-                    
+
                     // Validate inputs
                     if (!name || !email || !location) {
                         messageDiv.textContent = 'Please fill in all required fields.';
@@ -574,11 +574,33 @@ async function submitToDashboard(name, email, location) {
                         messageDiv.style.display = 'block';
                         return;
                     }
-                    
+
                     // Disable submit button and clear previous message
                     submitButton.disabled = true;
-                    submitButton.textContent = 'Starting...';
+                    submitButton.textContent = 'Checking...';
                     messageDiv.style.display = 'none';
+
+                    try {
+                        const res = await fetch(`${API_BASE}/api/check-email`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email })
+                        });
+                        const data = await res.json();
+                        if (data.hasPlayed) {
+                            messageDiv.innerHTML = `Sorry, you've already played. You only get one chance. Try your luck in the next slot. <a href="${API_BASE}" target="_blank">Check the leaderboard</a>.`;
+                            messageDiv.className = 'submission-message submission-error';
+                            messageDiv.style.display = 'block';
+                            submitButton.disabled = false;
+                            submitButton.textContent = 'Start Game';
+                            return;
+                        }
+                    } catch (err) {
+                        console.error('Error checking email:', err);
+                        // Even if the check fails, allow the player to proceed
+                    }
+
+                    submitButton.textContent = 'Starting...';
 
                     gameState.playerName = name;
                     gameState.playerEmail = email;
