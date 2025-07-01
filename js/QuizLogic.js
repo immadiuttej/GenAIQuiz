@@ -544,7 +544,7 @@ async function submitToDashboard(name, email, location) {
             const msg = document.getElementById('auto-submit-msg');
             if (msg) {
                 if (googleFormResult.success) {
-                    msg.innerHTML = `Score submitted automatically! <a href="${API_BASE}" target="_blank">View Leaderboard</a>`;
+                    msg.innerHTML = `Score submitted automatically!`;
                     msg.className = 'submission-message submission-success';
                 } else {
                     msg.innerHTML = 'Score submission failed.';
@@ -588,7 +588,7 @@ async function submitToDashboard(name, email, location) {
                         });
                         const data = await res.json();
                         if (data.hasPlayed) {
-                            messageDiv.innerHTML = `Sorry, you've already played. You only get one chance. Try your luck in the next slot. <a href="${API_BASE}" target="_blank">Check the leaderboard</a>.`;
+                            messageDiv.innerHTML = `Sorry, you've already played. You only get one chance. Try your luck in the next slot.`;
                             messageDiv.className = 'submission-message submission-error';
                             messageDiv.style.display = 'block';
                             submitButton.disabled = false;
